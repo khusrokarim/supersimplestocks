@@ -25,13 +25,11 @@ Stock objects contain the following attributes:
 
 This class represents an exchange, which operates on a number of stocks.  It is constructed by passing a string to represent the name.
 
-The Exchange class contains a single class-level method, load\_stocks(json\_filename).
-
 Exchange objects contain the following attributes:
 
  * stocks
  * trades
- * all\_share\_index
+ * all\_share\_index()
  * record\_trade(symbol, quantity, buy\_or\_sell, price)
  * add\_stock(stock)
 
@@ -44,5 +42,15 @@ I have assumed that:
  * Each stock is traded on a a maximum of one exchange.
  * All prices and dividends must be positive.
 
+Also, as general rules for guidance, I've assumed:
+ * Correctness is more important than simplicity (e.g., certain values have extra validation)
+ * Simplicity is more important than performance (e.g., no use of optimised NumPy structures or multiprocessing)
+
 I have not assumed that:
  * Prices must always be in a whole number of pennies.  Adopting this assumption, if it is valid, would improve performance.
+
+## Demonstrating functionality
+
+To run a demo with randomised trades:
+
+    python demo.py

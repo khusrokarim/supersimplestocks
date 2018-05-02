@@ -142,4 +142,3 @@ class Exchange:
 
 class InvalidOperation(Exception):
     pass
-
