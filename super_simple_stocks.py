@@ -124,6 +124,13 @@ class Exchange:
         )
         self.trades[symbol].append(trade)
 
+    def all_share_index(self):
+        """Calculate the all share index as the geometric mean of stock prices"""
+        price_product = Decimal('1')
+        for stock in self.stocks.values():
+            price_product *= stock.price()
+        return price_product ** Decimal(1/len(self.stocks))
+
 
 class InvalidOperation(Exception):
     pass

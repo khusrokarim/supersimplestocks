@@ -96,3 +96,12 @@ class TestExchange(unittest.TestCase):
             stock.record_trade(10, 'discard', 300)
         with self.assertRaises(ValueError):
             stock.record_trade(10, 'buy', -1)
+
+    def test_all_share_index(self):
+        stock1 = Stock('TEST1', 'common', 100)
+        stock2 = Stock('TEST2', 'common', 100)
+        self.exchange.add_stock(stock1)
+        self.exchange.add_stock(stock2)
+        stock1.record_trade(1, 'buy', 8)
+        stock2.record_trade(1, 'sell', 2)
+        self.assertEqual(self.exchange.all_share_index(), 4)

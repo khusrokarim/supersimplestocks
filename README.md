@@ -15,9 +15,9 @@ This class represents a single stock.  It is constructed using 3 positional argu
 Stock objects contain the following attributes:
 
  * exchange
- * dividend\_yield
- * pe\_ratio
- * price
+ * dividend\_yield()
+ * pe\_ratio()
+ * price()
  * record\_trade(quantity, buy\_or\_sell, price)
 
 
