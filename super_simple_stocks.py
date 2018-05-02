@@ -72,12 +72,17 @@ class Stock:
         # Since the examples do not include fixed dividends for common stock, and since
         # separate formulae are given for common and preferred where necessary (not for P/E ratio),
         # I will assume that the last dividend is relevant here.
-        if not self.last_dividend:
+        price = self.price()
+        if (price is None) or not self.last_dividend:
             raise InvalidOperation((
                 'P/E ratio cannot be calculated for {} '
                 'because it has not distributed a dividend'
+                ' or it does not have a price'
             ).format(self.symbol))
         return self.price() / self.last_dividend
+
+    def __str__(self):
+        return self.symbol
 
     @property
     def last_dividend(self):
@@ -128,8 +133,11 @@ class Exchange:
         """Calculate the all share index as the geometric mean of stock prices"""
         price_product = Decimal('1')
         for stock in self.stocks.values():
-            price_product *= stock.price()
+            price_product *= (stock.price() or 0)
         return price_product ** Decimal(1/len(self.stocks))
+
+    def __str__(self):
+        return self.name
 
 
 class InvalidOperation(Exception):
