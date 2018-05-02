@@ -2,33 +2,10 @@ from collections import defaultdict, namedtuple
 from datetime import datetime, timedelta
 from decimal import Decimal
 
-def as_nonnegative_decimal(name, value, allow_none=False):
-    """
-    Validate that `value` is a non-negative number, in a representation accepted by Decimal().
-    Returns `value` as a Decimal, or None if `allow_none` is True and `value` is None.
-    Raises ValueError if `value` is negative.
-    """
-
-    if value is None:
-        if allow_none:
-            return None
-        raise TypeError('{} must be a non-negative number (received {})'.format(name, value))
-    elif value < 0:
-        raise ValueError('{} must not be negative (received {})'.format(name, value))
-    else:
-        return Decimal(value)
-
-def validate_member(name, value, permitted):
-    if value not in permitted:
-        raise ValueError('{} must be one of {} (received {})'.format(name, permitted, value))
-    return value
+from utils import validate_nonnegative, validate_member
 
 
 Trade = namedtuple('Trade', ['date_time', 'symbol', 'quantity', 'buy_or_sell', 'price'])
-
-class InvalidOperation(Exception):
-    pass
-
 
 class Stock:
     """A single stock, optionally traded on a single exchange."""
@@ -41,7 +18,7 @@ class Stock:
     def __init__(self, symbol, stock_type, par_value, last_dividend=Decimal(), fixed_dividend=None):
         self.symbol = symbol
         self.stock_type = validate_member('stock_type', stock_type, self.stock_types)
-        self.par_value = as_nonnegative_decimal('par_value', par_value)
+        self.par_value = validate_nonnegative('par_value', par_value)
         self.last_dividend = last_dividend
         self.fixed_dividend = fixed_dividend
 
@@ -108,7 +85,7 @@ class Stock:
 
     @last_dividend.setter
     def last_dividend(self, value):
-        self._last_dividend = as_nonnegative_decimal('last_dividend', value)
+        self._last_dividend = validate_nonnegative('last_dividend', value)
 
     @property
     def fixed_dividend(self):
@@ -119,19 +96,7 @@ class Stock:
     def fixed_dividend(self, value):
         if (self.stock_type == 'preferred') and (value is None):
             raise TypeError('Preferred stock must have a fixed dividend')
-        self._fixed_dividend = as_nonnegative_decimal('fixed_dividend', value, True)
-
-    @property
-    def exchange(self):
-        """The exchange associated with this stock"""
-        try:
-            return self._exchange
-        except AttributeError:
-            raise InvalidOperation("Stock {} is not associated with an exchange".format(self.symbol))
-
-    @exchange.setter
-    def exchange(self, value):
-        self._exchange = value
+        self._fixed_dividend = validate_nonnegative('fixed_dividend', value, True)
 
 
 class Exchange:
@@ -153,8 +118,13 @@ class Exchange:
         trade = Trade(
             date_time=datetime.utcnow(),
             symbol=validate_member('symbol', symbol, self.stocks),
-            quantity=as_nonnegative_decimal('quantity', quantity),
+            quantity=validate_nonnegative('quantity', quantity),
             buy_or_sell=validate_member('buy_or_sell', buy_or_sell, ('buy', 'sell')),
-            price=as_nonnegative_decimal('price', price),
+            price=validate_nonnegative('price', price),
         )
         self.trades[symbol].append(trade)
+
+
+class InvalidOperation(Exception):
+    pass
+

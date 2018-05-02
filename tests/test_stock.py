@@ -82,7 +82,7 @@ class TestExchange(unittest.TestCase):
 
     def test_record_trade(self):
         stock = Stock('TEST', 'common', 100)
-        with self.assertRaises(InvalidOperation):
+        with self.assertRaises(AttributeError):
             stock.record_trade(10, 'buy', 300)
         self.exchange.add_stock(stock)
         stock.record_trade(10, 'buy', 300)
